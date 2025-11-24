@@ -170,6 +170,3 @@ pip install -r requirements.txt (or poetry install)
 python app/database/create_tables.py
 python main.py 24 10
 ```
-
-
-Just tell me — I can refine this to make your repo look premium.
