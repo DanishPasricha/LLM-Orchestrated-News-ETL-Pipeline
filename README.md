@@ -1,50 +1,175 @@
-# AI News Aggregator - Live Build Repository
+# 🌐 AI News Intelligence Pipeline
 
-This repository accompanies my 3-hour live coding session where I build a complete AI-powered news aggregator from scratch. This is a **private repository** containing valuable implementation details and deployment strategies used in production environments.
+**LLM-Powered Automated AI News Aggregator, Summarizer & Email Digest System**
 
-## Project Structure
+This project is an **end-to-end autonomous AI news monitoring pipeline** that collects the latest updates from major AI sources (YouTube AI channels, OpenAI, Anthropic), enriches the content using transcripts & markdown extraction, generates concise digests using LLMs, ranks them based on a customizable user profile, and finally emails a clean, curated daily digest.
 
-This project is organized across three branches, each corresponding to a different phase of the build:
+The system runs like a mini autonomous agent workflow with **ETL → Enrichment → LLM Digests → Ranking → Email Delivery**.
 
-- **`master`** - Part 1: Local setup and core functionality
-- **`deployment`** - Part 2: Deployment configuration and infrastructure
-- **`deployment-final`** - Part 3: Final optimizations and production-ready changes
+Perfect for personal research monitoring, newsletters, or daily AI insights.
 
-Each branch serves as an intermediate checkpoint, allowing you to reference the exact state of the codebase at any point during the video.
+---
 
-## How This Video Works
+## 🚀 Features
 
-This is a **live coding build**, not a traditional step-by-step tutorial. Here's what to expect:
+* **Automated scraping**
 
-- **Fast-paced development** - I code at my natural pace, leveraging AI tools extensively
-- **AI-assisted workflow** - You won't see every code snippet or file generation in real-time
-- **Real-world approach** - This condenses 20-40 hours of learning into a single session
-- **Not cookie-cutter** - Unlike structured tutorials, this reflects how coding actually happens in practice
+  * YouTube AI channels
+  * OpenAI News (RSS)
+  * Anthropic Blog (RSS)
 
-## How to Follow Along
+* **Content enrichment**
 
-### Recommended Approach (Maximum Learning)
+  * YouTube transcript extraction
+  * Anthropic article → Markdown conversion
 
-1. **Clone this repository** before starting the video
-2. **Keep a local copy ready** on your system as you code along
-3. **Use intermediate checkpoints** - When I make major updates or run tests, pause and:
-   - Reference the corresponding branch in this repository
-   - Copy relevant code snippets into your project
-   - Use AI coding assistants to help you reach the same checkpoint
-4. **Iterate step-by-step** - Don't rush ahead. Ensure each phase works before moving forward
-5. **Expect confusion** - Some parts will move fast and may not be immediately clear. This is where real learning happens
+* **Digest generation (LLMs)**
 
-### Alternative Approach (Not Recommended)
+  * GPT-4o-mini creates structured summaries
+  * Domain-aware summaries based on article type
 
-You can skip ahead to the `deployment-final` branch and try to get everything working, but you'll miss the iterative problem-solving process that makes this valuable.
+* **AI ranking agent**
 
-## Why This Approach?
+  * Personalizes digest ordering based on user interests
+  * Uses relevance scoring + reasoning
 
-Traditional tutorials show you the "right way" to do things. This video shows you the **real way** - with AI assistance, rapid iteration, debugging, and adapting on the fly. By following along and hitting the same checkpoints, you'll:
+* **Automatic email digest**
 
-- Learn how to effectively leverage AI coding tools
-- Understand the thought process behind architectural decisions
-- Experience real-world development workflows
-- Build muscle memory through hands-on practice
+  * Generates Markdown & HTML email
+  * Sends curated list via SMTP
 
-**The most valuable learning happens when you struggle, reference the code, and push through to the next checkpoint.**
+* **Full persistence**
+
+  * PostgreSQL + SQLAlchemy ORM
+  * Stores raw articles, transcripts, markdown, digests
+
+---
+
+# 🧠 Tech Stack
+
+| Layer                  | Technology                           |
+| ---------------------- | ------------------------------------ |
+| **Language**           | Python 3.11                          |
+| **Scraping**           | feedparser, youtube-transcript-api   |
+| **Content Extraction** | Docling (HTML → Markdown conversion) |
+| **LLM Agents**         | OpenAI Responses API (GPT-4o-mini)   |
+| **Database**           | PostgreSQL, SQLAlchemy ORM           |
+| **Email Delivery**     | SMTP + MIME (HTML + Markdown)        |
+| **Environment**        | python-dotenv                        |
+| **Deployment**         | Docker Compose (Postgres container)  |
+
+---
+
+# 🔄 High-Level Workflow Diagram (Colored)
+
+The diagram below is fully GitHub-friendly and uses ANSI-style colors.
+
+```
+               ┌──────────────────────────────────────────────────┐
+               │                🌐 Data Sources                   │
+               │                                                  │
+               │  🟥 YouTube AI Channels                          │
+               │  🟦 OpenAI News RSS                              │
+               │  🟩 Anthropic Blog RSS                           │
+               └──────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                    ┌──────────────────────────┐
+                    │   🟧 Scraping Layer      │
+                    │ - Fetch RSS feeds        │
+                    │ - Fetch YouTube videos   │
+                    └──────────────────────────┘
+                                  │
+                                  ▼
+               ┌──────────────────────────────────────────────────┐
+               │               🟪 Enrichment Layer                 │
+               │ - YouTube → Transcript extraction                │
+               │ - Anthropic → HTML → Markdown conversion         │
+               └──────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                     ┌──────────────────────────┐
+                     │   🟨 Database Layer       │
+                     │ PostgreSQL + SQLAlchemy  │
+                     │ - Store raw articles     │
+                     │ - Store transcripts      │
+                     │ - Store markdown         │
+                     └──────────────────────────┘
+                                  │
+                                  ▼
+         ┌──────────────────────────────────────────────────────────┐
+         │                  🟦 LLM Digest Agent                      │
+         │  GPT-4o-mini: Summaries for each article/video           │
+         │  Output → Title + Summary (structured)                   │
+         └──────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+         ┌──────────────────────────────────────────────────────────┐
+         │                  🟩 Ranking Agent                         │
+         │ - Understands user profile                               │
+         │ - Assigns relevance scores                               │
+         │ - Orders articles for digest                             │
+         └──────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+             ┌─────────────────────────────────────────────┐
+             │            🟨 Email Digest Builder           │
+             │ - Markdown + HTML generation                │
+             │ - Curated list of top N items               │
+             └─────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                     ┌──────────────────────────┐
+                     │      🟦 SMTP Email        │
+                     │   Daily AI Digest Email  │
+                     └──────────────────────────┘
+```
+
+---
+
+# 📦 Project Structure
+
+```
+ai-news-intelligence-pipeline/
+│
+├── app/
+│   ├── agent/           # Digest agent, ranking agent, email agent
+│   ├── scrapers/        # YouTube, OpenAI, Anthropic scrapers
+│   ├── services/        # Transcript processing, markdown extraction, email
+│   ├── database/        # SQLAlchemy models & repository
+│   ├── config.py        # Channel list + settings
+│   └── daily_runner.py  # Full pipeline orchestration
+│
+├── docker/
+│   └── docker-compose.yml  # Postgres container
+│
+├── main.py                # CLI entrypoint
+├── pyproject.toml         # Dependencies
+└── example.env            # Environment variables
+```
+
+---
+
+# ⚙️ How It Works (Short Summary)
+
+1. **Scrapers** pull new videos & articles from YouTube, OpenAI, Anthropic.
+2. **Processing layer** enriches them with transcripts or markdown.
+3. **Digest Agent (LLM)** summarizes each piece into short, high-value digests.
+4. **Curator Agent (LLM)** ranks articles based on a personalized user profile.
+5. **Email Agent** generates a clean digest in HTML & Markdown.
+6. **SMTP Service** sends a daily email to the user.
+
+---
+
+# 📥 Setup (Quick Start)
+
+```bash
+cp example.env .env
+docker compose up -d  # Start PostgreSQL
+pip install -r requirements.txt (or poetry install)
+python app/database/create_tables.py
+python main.py 24 10
+```
+
+
+Just tell me — I can refine this to make your repo look premium.
